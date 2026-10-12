@@ -1,123 +1,58 @@
 # GT3 DevRAM Patcher
 
-A Windows tool for enabling the 128 MiB development memory configuration in the PAL/EU version of Gran Turismo 3.
+A Windows tool that patches a compatible PAL/EU Gran Turismo 3 `CORE.GT3` to use 128 MiB development RAM in PCSX2. There is also an optional larger course buffer for custom tracks.
 
-It can also optionally increase the course buffer for testing larger custom courses.
+You supply the CORE. The tool writes a separate, patched `.elf` and leaves your input alone. No game files are included.
 
-The tool does not include any Gran Turismo 3 game files. You must provide your own `CORE.GT3`.
+## Download
 
-## Current status
+Get the Windows ZIP from this repository's **Releases** section, extract it and run `GT3DevRAM.exe`. `GT3DevRAM-CLI.exe` is included for command-line use.
 
-This project is still experimental.
+## Before starting
 
-The DevRAM patch and course buffer changes have been extensively checked against the known PAL/EU executable layout, but not every possible modified CORE can be guaranteed to work.
+You need 64-bit Windows, your own supported PAL/EU CORE, a matching GT3 ISO, and a working PCSX2 setup with your own BIOS. Use a PCSX2 build that offers **Enable 128MB RAM (Dev Console)**.
 
-If you are using a modified `CORE.GT3`, run the compatibility scan first.
+Keep your original files. This tool builds a direct-boot ELF; it does not make a replacement signed `CORE.GT3` for the normal disc boot process.
 
-## Features
+## Make the ELF
 
-- Enables the 128 MiB DevRAM configuration
-- Optional extended course buffer
-- Supports the original PAL/EU CORE layout
-- Can accept some previously modified CORE files
-- Checks important patch locations before modifying anything
-- Preserves unrelated compatible modifications
-- Refuses to patch files when known conflicts are detected
-- Does not modify the original input file
-- GUI and command-line versions are included
+1. Open `GT3DevRAM.exe` and select your CORE.
+2. Choose a new output folder inside an existing writable folder.
+3. For normal ISO play, select **Asset source: disc**. Use **host** only with a prepared, extracted GT3 `data` folder. **preserve** leaves the input's existing choice unchanged.
+4. Leave the course option unchecked for RAM-only, or enter the course capacity you need.
+5. Click **Scan compatibility**, then **Create new patched ELF**.
 
-## Requirements
+The output folder includes the ELF, `BUILD_REPORT.json` and `BOOT_INSTRUCTIONS.txt`.
 
-- Windows 10 or Windows 11
-- Your own Gran Turismo 3 PAL/EU `CORE.GT3`
-- PCSX2 configured to use 128 MiB development memory
-- A backup of your original files
+## Run it in PCSX2
 
-No game files are included with this project.
+These steps use the desktop/Qt interface. Menu wording may differ slightly between builds.
 
-## Usage
+1. Keep the generated `.elf` in a permanent folder. In PCSX2, open **Settings → Game List** and add that folder to the search directories. Enable recursive scanning if the ELF is in a subfolder, then refresh the list.
+2. Right-click the **ELF entry** → **Properties → Summary**. Set **Disc Path** to your matching PAL/EU GT3 ISO. Adding the ISO to the list on its own is not enough.
+3. Enable **Tools → Show Advanced Settings**. Open the ELF's **Properties → Advanced** and enable **Enable 128MB RAM (Dev Console)**. A build with a memory-size selector needs **128 MB**.
+4. Stop any running emulation, then start the **ELF entry**, not the normal ISO entry. Do not load an old save state for this boot. Normal memory-card saves can still be used.
 
-1. Download the latest release.
-2. Extract the ZIP somewhere on your PC.
-3. Run `GT3DevRAM.exe`.
-4. Select your `CORE.GT3`.
-5. Run the compatibility scan.
-6. Select the options you want.
-7. Build the patched output.
+For HostFS, put the ELF **beside** your prepared `data` folder, enable the ELF's **Properties → Emulation → Enable Host Filesystem**, and keep the ISO associated. The patcher does not extract or prepare the game assets.
 
-The original input file is left untouched.
+See [PCSX2_SETUP.txt](PCSX2_SETUP.txt) for the full instructions, folder examples and troubleshooting. The same guide is written beside each generated ELF. There is also a **PCSX2 setup...** button in the program.
 
-### Modified CORE files
+## Course capacity
 
-A CORE does not have to be completely untouched to work.
+The optional course patch accepts 13–80 MiB. Use a setting that fits the course without spending more memory than needed. Courses, cars and other game allocations share memory; 128 MiB does not mean a course can use all 128 MiB. The 80-MiB setting is experimental.
 
-The compatibility mode allows some modified PAL/EU CORE files as long as the parts of the game required by the DevRAM patch still use the expected layout.
+This does not increase GS VRAM or remove the separate car and renderer limits. Recheck the PCSX2 settings whenever you build a different ELF.
 
-For example, unrelated changes elsewhere in the executable may be preserved.
+## Modified CORE files
 
-The tool will reject files when it detects changes to important startup, memory-management or course-loading code that could make the patch unsafe.
+Enable **Allow modified EU inputs** for a CORE that has already been edited. It must still have the layout and code needed by this patch. Unrelated compatible edits are kept; conflicting hooks or changed dependencies are rejected.
 
-Passing the compatibility scan does not guarantee that every combination of GT3 modifications will work together at runtime.
+A passing scan is not a guarantee that every combination of mods will work in-game. Start with a stock course, then test your intended course, cars and mode.
 
-## Extended course buffer
+## Problems
 
-The course buffer option is intended for custom course testing.
+Open an Issue with the tool version, PCSX2 version, selected settings and the error text. Do not upload your CORE, ELF, ISO or BIOS.
 
-Different capacities can be selected depending on the course being tested.
+Testing details are in [TESTING.md](TESTING.md).
 
-Larger settings use considerably more EE memory and should not automatically be considered better. The highest settings are experimental.
 
-If you only want DevRAM, leave the extended course buffer option disabled.
-
-## Important note about the output
-
-The current tool produces a patched direct-boot ELF.
-
-It does not currently rebuild a normally signed replacement `CORE.GT3` for use through the original game boot process.
-
-## PCSX2
-
-The patched game expects PCSX2 to be configured with the development memory size required by the patch.
-
-Using the patched executable without the correct memory configuration is not supported.
-
-## Compatibility
-
-At the moment this project targets the PAL/EU GT3 executable layout used during development.
-
-Other regions should be considered unsupported unless support for them is specifically added in a future release.
-
-Modified PAL/EU files may work when they retain the required executable layout and pass the compatibility scan.
-
-## What this does not change
-
-This patch increases available EE memory.
-
-It does not increase the PS2's GS VRAM, remove every internal GT3 buffer limit, or automatically make every large course or car compatible with the game.
-
-Those are separate limitations.
-
-## Backups
-
-Always keep your original files.
-
-The program writes its result separately, but you should still keep an untouched copy of your original `CORE.GT3`.
-
-## Bug reports
-
-If you find a file that you believe should be compatible but the tool rejects it, open an Issue and include:
-
-- The version of the tool
-- Whether the CORE was modified
-- Which options you selected
-- The compatibility/error message shown by the program
-
-Do not upload copyrighted game files when reporting an issue.
-
-## Disclaimer
-
-This is an unofficial fan-made modding tool and is not affiliated with or endorsed by Sony Interactive Entertainment or Polyphony Digital.
-
-Gran Turismo and related names are trademarks of their respective owners.
-
-No copyrighted Gran Turismo game files are distributed with this project.
