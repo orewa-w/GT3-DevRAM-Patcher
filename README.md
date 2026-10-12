@@ -53,6 +53,3 @@ A passing scan is not a guarantee that every combination of mods will work in-ga
 
 Open an Issue with the tool version, PCSX2 version, selected settings and the error text. Do not upload your CORE, ELF, ISO or BIOS.
 
-Testing details are in [TESTING.md](TESTING.md).
-
-
