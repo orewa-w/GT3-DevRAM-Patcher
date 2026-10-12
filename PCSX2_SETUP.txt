@@ -1,0 +1,141 @@
+GT3 DevRAM Patcher - PCSX2 setup
+
+The patched .elf starts the game code. Your ISO supplies the disc content.
+Boot the ELF entry, not the normal ISO entry.
+
+These steps use the PCSX2 desktop/Qt interface. Some builds use slightly
+different labels. Make the changes for the ELF you will actually launch.
+
+1. BUILD THE PATCHED ELF
+
+Open GT3DevRAM.exe and select your own supported PAL/EU CORE.GT3.
+Choose a new output folder inside an existing writable folder.
+Run Scan compatibility, then Create new patched ELF.
+
+For a normal ISO setup, select Asset source = disc. The default, preserve,
+also keeps disc loading when the input still uses the original disc code.
+Preserve does NOT turn an already HostFS-modified input back into disc mode.
+
+For loose extracted/modded assets, select host and read section 6 below.
+
+Leave the course option unchecked for RAM-only. Otherwise enter 13-80 MiB.
+Use a capacity that fits your course without needlessly consuming memory.
+80 MiB is experimental; not all of the 128 MiB is available for courses.
+
+The output folder contains the ELF, BUILD_REPORT.json and these instructions.
+A name such as GT3_EU_DevRAM_C48_DISC.elf means 48-MiB course capacity with
+disc assets. RAM_ONLY means the course-capacity patch was not added.
+
+2. PUT THE ELF IN A PERMANENT FOLDER AND ADD IT TO PCSX2
+
+For ISO/disc mode, keeping the ELF in its output folder is fine. For example:
+
+  C:\GT3\Boot\GT3_EU_DevRAM_C48_DISC.elf
+  C:\GT3\Disc\GT3_EU.iso
+
+The ELF and ISO do not have to be next to each other in disc mode.
+The ELF can be copied or renamed, but keep its .elf extension.
+Do not rename it CORE.GT3 or replace the game's original executable with it.
+
+In PCSX2, open Settings > Game List. Add the folder containing the ELF to
+Search Directories using Add / the plus button. Select the folder, not the
+ELF itself. If the ELF is in a subfolder, enable recursive scanning, or add
+that exact subfolder instead. Refresh/rescan the game list if needed.
+
+The patched ELF should now appear as its own entry. It may use the filename
+rather than the usual Gran Turismo 3 cover/title. Open Properties and check
+the file path if several entries look similar.
+
+3. ASSOCIATE YOUR MATCHING ISO
+
+Right-click the PATCHED ELF entry in the game list and select Properties.
+Open Summary. Beside Disc Path, use Browse / ... and select the matching
+PAL/EU GT3 ISO from your own disc. Close the dialog after saving the setting.
+
+Do this on the ELF entry, not on the ordinary GT3 ISO entry.
+Adding the ISO to the game list by itself does not associate it with the ELF.
+Keep the ISO associated even in HostFS mode for module/auxiliary disc reads.
+
+4. ENABLE 128-MiB DEVELOPMENT RAM FOR THAT ELF
+
+In PCSX2's main menu, enable Tools > Show Advanced Settings if needed.
+Right-click the same patched ELF entry > Properties > Advanced.
+Enable Enable 128MB RAM (Dev Console).
+
+A build using a memory-size selector instead needs 128 MB / Dev Console.
+Do not leave the setting inheriting a 32-MB default. Reopen the properties
+to confirm the value saved. If Advanced is missing, enable Show Advanced
+Settings, close Properties, and open it again.
+
+Both the game patch AND this PCSX2 setting are needed. The Windows patcher
+does not change PCSX2 settings for you. Do not enable unrelated advanced
+options or game fixes merely to follow this guide.
+
+5. START THE PATCHED GAME
+
+Fully stop any running emulation. Double-click the PATCHED ELF entry, or
+use its normal Start action. Do not launch the ordinary ISO entry instead.
+Do not resume an old save state or choose Load State for the first boot.
+A cold boot here means a fresh run of the patched ELF, not starting the
+ordinary disc through the BIOS's Full Boot path.
+
+Use normal memory-card saves for your progress. First check a stock course,
+then the intended custom course and car/mode combination. A compatibility
+scan checks the executable; it cannot test every combination during play.
+
+After building a different capacity or changing the input, treat the new
+ELF as a new entry. Its CRC/settings association may differ. Recheck Disc
+Path, 128-MiB RAM and, where used, Host Filesystem before launching it.
+
+6. HOSTFS MODE: LOOSE EXTRACTED/MODDED GAME FILES
+
+This section is only for a build made with source = host, or preserve on
+an input that already uses HostFS.
+
+Host mode expects an already prepared GT3 extracted data tree. The patcher
+does not extract the ISO or GT3.VOL, and does not create the data folder.
+Enabling Host Filesystem alone does not make an ordinary disc build load
+loose courses. Choose host when creating the patched ELF for that workflow.
+
+Copy the GENERATED ELF beside your existing data folder, not inside it:
+
+  C:\GT3\gt3pal\GT3_EU_DevRAM_C48_HOST.elf
+  C:\GT3\gt3pal\data\...
+
+Add C:\GT3\gt3pal to PCSX2's game-list search directories, then configure
+this copied ELF entry as in sections 3-4. Keep the matching EU ISO selected.
+In the ELF's Properties > Emulation, enable Enable Host Filesystem.
+
+Relative host:data/ paths must resolve to your prepared data folder.
+Do not leave the ELF one directory deeper in an output subfolder while the
+data folder stays in the parent. The game will look in the wrong place.
+
+Boot this direct ELF. A separate SCES bootstrap or another hook loader is
+not part of this launch route. Do not replace CORE.GT3 with the output ELF.
+
+7. COMMON SETUP PROBLEMS
+
+ELF not listed: extract it from the ZIP, check the .elf extension and search
+folder, enable recursive scanning if needed, and refresh the game list.
+
+Two similar GT3 entries: inspect Properties > Summary and verify the path
+points to the patched .elf rather than the .iso or an older output.
+
+Missing files / black screen: check the matching ISO association first.
+For host mode also check Host Filesystem, the asset-source choice and the
+ELF/data folder layout. Keep all files required by your modded data tree.
+
+Large course still fails: verify that THIS ELF has 128-MiB RAM enabled and
+was built with enough course capacity. Other GT3 limits are unchanged.
+
+Only old setup works: stop emulation and cold-boot. Recheck the settings on
+the new ELF rather than assuming the old entry's settings carried over.
+
+A successful build report is not confirmation that extra RAM was used at
+runtime. The guards can leave the original behavior in place when required
+conditions are not met. Report the tool/PCSX2 versions, settings and error
+text; do not attach game ELF, CORE, ISO or BIOS files to public issues.
+
+For the basic PCSX2 installation/BIOS/controller setup, use its official
+setup documentation. For menu-path references, see SOURCES.md in the
+release. No PCSX2 or game files are included with this patcher.

@@ -1,0 +1,7 @@
+GT3 DevRAM Patcher
+
+An unofficial GT3 modding tool. Not affiliated with Sony, Polyphony Digital
+or the PCSX2 project.
+
+Supply your own supported CORE and matching game disc image. No game CORE,
+game ELF, ISO, BIOS, or course files are included.
